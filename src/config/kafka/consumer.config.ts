@@ -1,5 +1,6 @@
 
 import { Kafka, Consumer } from 'kafkajs';
+import { SesionManager } from '../../controllers/sesionmanager.controller';
 
 export class KafkaConsumer {
     
@@ -19,16 +20,6 @@ export class KafkaConsumer {
     async setupKafkaConsumer() {
         await this.consumer.connect();
         await this.consumer.subscribe({ topic: 'test', fromBeginning: true }); // Cambia a tu valor
-
-        // await this.consumer.run({
-        //     eachMessage: async ({ topic, partition, message }) => {
-        //         console.log({
-        //             topic,
-        //             partition,
-        //             value: message.value!.toString(),
-        //         });
-        //     },
-        // });
     }
 
     async start() {
@@ -39,8 +30,11 @@ export class KafkaConsumer {
                 console.log({
                     topic,
                     partition,
-                    value: message.value!.toString(),
+                    value: message.value!.toString,
                 });
+
+                const value = message.value!.toString();
+                await new SesionManager().loginManager(JSON.parse(value))
             },
         });
     }
