@@ -8,6 +8,9 @@ export class Loginsesion extends BaseEntity {
     id: string = uuidv4() 
 
     @Column()
+    userId!: string
+
+    @Column()
     email!: string
 
     @Column({ default : true})
