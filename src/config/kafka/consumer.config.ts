@@ -3,7 +3,7 @@ import { Kafka, Consumer } from 'kafkajs';
 import { SesionManager } from '../../controllers/sesionmanager.controller';
 
 export class KafkaConsumer {
-    
+
     private kafka: Kafka;
     private consumer: Consumer;
 
@@ -33,8 +33,13 @@ export class KafkaConsumer {
                     value: message.value!.toString,
                 });
 
-                const value = message.value!.toString();
-                await new SesionManager().loginManager(JSON.parse(value))
+                const value = JSON.parse(message.value!.toString());
+
+                if (value.id) {
+                    await new SesionManager().loginManager(value)
+                } else if (!value.id) {
+                    await new SesionManager().logoutManager(value)
+                }
             },
         });
     }
