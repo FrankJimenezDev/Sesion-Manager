@@ -9,7 +9,7 @@ export class SesionManager {
         const {
             id,
             status,
-            email
+            email,
         } = ObjetoKafka
 
         const loginSesionDB = db.getRepository(Loginsesion)
@@ -28,13 +28,48 @@ export class SesionManager {
             
 
         } catch (error) {
-            console.log(`Error al cargar datos en lolginSesionDB`);
+            console.log(`Error al cargar datos en login`);
+            console.error(error)
+        } 
+    }
+
+    async logoutManager(ObjetoKafka: DtoKafka) {
+
+        const {
+            email,
+            fecha
+        } = ObjetoKafka
+
+        const loginSesionDB = db.getRepository(Loginsesion)
+
+        try {
+
+            const loginSesion = await loginSesionDB.find({
+                where: {
+                    email,
+                    logoutAt : undefined
+                },
+            
+            })
+
+            if (!loginSesion) {
+                console.log(`no se encontro sesion con el email`);
+                return;
+            }
+
+            loginSesionDB.merge(loginSesion[loginSesion.length-1], { logoutAt: fecha })
+
+            await loginSesionDB.save(loginSesion);
+
+            console.log(`fecha de logout agregada`);
+            
+        } catch (error) {
+            console.log(`Error al cargar datos en logout`);
             console.error(error)
         }
+
 
     }
 
 }
-
-
 
