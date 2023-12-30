@@ -12,27 +12,25 @@ services:
     ports:
       - "3307:3306"
     networks:
-      - mySesionManagerNetwork
+      - mykafkanetwork
 
-  # node_app:
-  #   image: miapp:2
-  #   container_name: SesionManagerAPP
-  #   environment:
-  #     - PORT=${PORT}
-  #     - KEY_TOKEN=${KEY_TOKEN}
-  #     - DB_HOST=${DB_HOST}
-  #     - DB_PORT=${DB_PORT}
-  #     - DB_USER=${DB_USER}
-  #     - DB_PASS=${DB_PASS}
-  #     - DB_NAME=${DB_NAME} 
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - mysql
-  #   networks:
-  #     - mynetwork
-
+  node_app:
+    image: sesionsmanager:1
+    container_name: SesionManagerAPP
+    environment:
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME} 
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - mykafkanetwork
 
 networks:
-  mySesionManagerNetwork:
-    driver: bridge
+  mykafkanetwork:
+    external: true
