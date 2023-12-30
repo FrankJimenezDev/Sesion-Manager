@@ -11,7 +11,7 @@ export class KafkaConsumer {
         // Configuración de Kafka
         this.kafka = new Kafka({
             clientId: 'MyKafkaIdClient',
-            brokers: ['localhost:9092'], // Cambia esto con la dirección de tu servidor Kafka
+            brokers: [process.env.BROKER_KAFKA!], // Cambia esto con la dirección de tu servidor Kafka
         });
 
         this.consumer = this.kafka.consumer({ groupId: 'MyKafkaIdGroup' });
