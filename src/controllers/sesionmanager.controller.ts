@@ -1,3 +1,4 @@
+import { IsNull } from "typeorm"
 import { db } from "../config/db/dbconnection"
 import { Loginsesion } from "../config/entity/loginsesion.entity"
 import { DtoKafka } from "../interfaces/kafka.dto"
@@ -47,8 +48,11 @@ export class SesionManager {
             const loginSesion = await loginSesionDB.find({
                 where: {
                     email,
-                    logoutAt : undefined
+                    logoutAt : IsNull(),
                 },
+                order: {
+                    loginAt : "desc"
+                }
             
             })
 
@@ -57,7 +61,11 @@ export class SesionManager {
                 return;
             }
 
-            loginSesionDB.merge(loginSesion[loginSesion.length-1], { logoutAt: fecha })
+            loginSesion.forEach(element => {
+                loginSesionDB.merge( element, {logoutAt : fecha})
+            });
+
+            // loginSesionDB.merge( loginSesion, { logoutAt: fecha })
 
             await loginSesionDB.save(loginSesion);
 
