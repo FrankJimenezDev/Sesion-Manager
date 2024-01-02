@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: SesionManagerDB
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    networks:
+      - mykafkanetwork
+
+  node_app:
+    image: sesionsmanager:1
+    container_name: SesionManagerAPP
+    environment:
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME} 
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - mykafkanetwork
+
+networks:
+  mykafkanetwork:
+    external: true
