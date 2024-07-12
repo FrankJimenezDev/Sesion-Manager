@@ -11,15 +11,15 @@ export class KafkaConsumer {
         // Configuración de Kafka
         this.kafka = new Kafka({
             clientId: 'MyKafkaIdClient',
-            brokers: [process.env.BROKER_KAFKA!], // Cambia esto con la dirección de tu servidor Kafka
+            brokers: ['localhost:9092'], // Cambia esto con la dirección de tu servidor Kafka
         });
 
-        this.consumer = this.kafka.consumer({ groupId: 'MyKafkaIdGroup' });
+        this.consumer = this.kafka.consumer({ groupId: 'my-consumer-group' });
     }
 
     async setupKafkaConsumer() {
         await this.consumer.connect();
-        await this.consumer.subscribe({ topic: 'test', fromBeginning: true }); // Cambia a tu valor
+        await this.consumer.subscribe({ topic: 'my-topic', fromBeginning: true }); // Cambia a tu valor
     }
 
     async start() {
@@ -30,16 +30,20 @@ export class KafkaConsumer {
                 console.log({
                     topic,
                     partition,
-                    value: message.value!.toString,
+                    value: message.value
                 });
 
-                const value = JSON.parse(message.value!.toString());
-
-                if (value.id) {
-                    await new SesionManager().loginManager(value)
-                } else if (!value.id) {
-                    await new SesionManager().logoutManager(value)
-                }
+                if (message.value) {
+                    try {
+                      const value = JSON.stringify(message.value.toString());
+                      console.log(`Received message: ${value}`);
+                      // Aquí procesas el mensaje normalmente
+                    } catch (error) {
+                      console.error(`Error parsing message: ${error}`);
+                    }
+                  } else {
+                    console.warn('Received null message, skipping...');
+                  }
             },
         });
     }
